@@ -1,0 +1,18 @@
+{
+  "name": "smartbrain-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server"
+  },
+  "keywords": [],
+  "author": "Vaibhav Singh <0vaibhavsingh0@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
