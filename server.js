@@ -1,6 +1,11 @@
 const express = require("express");
+const bcrypt = require("bcrypt-nodejs");
+const { promisify } = require("util");
 
 const app = express();
+
+const hash = promisify(bcrypt.hash);
+const compare = promisify(bcrypt.compare);
 
 const PORT = process.env.PORT || 3000;
 
@@ -10,7 +15,7 @@ const database = {
       id: "1",
       name: "John",
       email: "john@example.com",
-      password: "john",
+      password: "$2a$10$TAASlPnjTPNMLVXc2DqD5u3W8jEwpBIpNbeX/LkgcKv2UVk.lr2jO",
       entries: 0,
       joined: new Date(),
     },
@@ -18,7 +23,7 @@ const database = {
       id: "2",
       name: "Sally",
       email: "sally@example.com",
-      password: "sally",
+      password: "$2a$10$xF8/uOijEcoBwhfjNjTKyOiMVQPa5z/QHNza6t74ZJnIGB0dVkcXW",
       entries: 0,
       joined: new Date(),
     },
@@ -32,49 +37,58 @@ app.get("/", (req, res) => {
   res.json(database.users);
 });
 
-app.post("/signin", (req, res) => {
-  if (
-    req.body.email === database.users[0].email &&
-    req.body.password === database.users[0].password
-  ) {
-    return res.json("success");
+app.post("/signin", async (req, res) => {
+  const user = database.users.find((u) => u.email === req.body.email);
+  if (!user) return res.status(404).json("NOT FOUND");
+  try {
+    if (await compare(req.body.password, user.password)) {
+      return res.json("success");
+    }
+  } catch (error) {
+    console.log(error);
   }
+
   res.status(400).json("error logging in");
 });
 
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
+  try {
+    const hashedPassword = await hash(password, null, null);
 
-  database.users.push({
-    id: Date.now().toString(),
-    name,
-    email,
-    password,
-    entries: 0,
-    joined: new Date(),
-  });
+    database.users.push({
+      id: Date.now().toString(),
+      name,
+      email,
+      password: hashedPassword,
+      entries: 0,
+      joined: new Date(),
+    });
+  } catch (error) {
+    console.log(error);
+  }
 
   res.json(database.users[database.users.length - 1]);
 });
 
-app.get('/profile/:id', (req, res) => {
-  const { id } = req.params; 
-  const user = database.users.find(u => u.id === id);
+app.get("/profile/:id", (req, res) => {
+  const { id } = req.params;
+  const user = database.users.find((u) => u.id === id);
 
   if (!user) return res.status(404).json("NOT FOUND");
-  res.json(user)
-})
+  res.json(user);
+});
 
-app.put('/image', (req, res) => {
-  const { id } = req.body; 
-  const user = database.users.find(u => u.id === id);
+app.put("/image", (req, res) => {
+  const { id } = req.body;
+  const user = database.users.find((u) => u.id === id);
 
   if (!user) return res.status(404).json("NOT FOUND");
 
   ++user.entries;
 
-  res.json(user)
-})
+  res.json(user);
+});
 
 app.listen(PORT, () => {
   console.log("listening on port " + PORT);
