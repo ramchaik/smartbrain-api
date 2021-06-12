@@ -1,5 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt-nodejs");
+const cors = require("cors");
+
 const { promisify } = require("util");
 
 const app = express();
@@ -30,6 +32,7 @@ const database = {
   ],
 };
 
+app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -39,6 +42,7 @@ app.get("/", (req, res) => {
 
 app.post("/signin", async (req, res) => {
   const user = database.users.find((u) => u.email === req.body.email);
+
   if (!user) return res.status(404).json("NOT FOUND");
   try {
     if (await compare(req.body.password, user.password)) {
