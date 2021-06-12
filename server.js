@@ -46,7 +46,7 @@ app.post("/register", (req, res) => {
   const { name, email, password } = req.body;
 
   database.users.push({
-    id: Date.now(),
+    id: Date.now().toString(),
     name,
     email,
     password,
@@ -56,6 +56,25 @@ app.post("/register", (req, res) => {
 
   res.json(database.users[database.users.length - 1]);
 });
+
+app.get('/profile/:id', (req, res) => {
+  const { id } = req.params; 
+  const user = database.users.find(u => u.id === id);
+
+  if (!user) return res.status(404).json("NOT FOUND");
+  res.json(user)
+})
+
+app.put('/image', (req, res) => {
+  const { id } = req.body; 
+  const user = database.users.find(u => u.id === id);
+
+  if (!user) return res.status(404).json("NOT FOUND");
+
+  ++user.entries;
+
+  res.json(user)
+})
 
 app.listen(PORT, () => {
   console.log("listening on port " + PORT);
