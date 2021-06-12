@@ -46,7 +46,7 @@ app.post("/signin", async (req, res) => {
   if (!user) return res.status(404).json("NOT FOUND");
   try {
     if (await compare(req.body.password, user.password)) {
-      return res.json("success");
+      return res.json(user);
     }
   } catch (error) {
     console.log(error);
@@ -91,7 +91,7 @@ app.put("/image", (req, res) => {
 
   ++user.entries;
 
-  res.json(user);
+  res.json(user.entries);
 });
 
 app.listen(PORT, () => {
