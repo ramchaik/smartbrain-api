@@ -1,15 +1,26 @@
 const express = require("express");
 const bcrypt = require("bcrypt-nodejs");
-const cors = require("cors");
-
 const { promisify } = require("util");
+const cors = require("cors");
+const knex = require('knex');
 
 const app = express();
 
 const hash = promisify(bcrypt.hash);
 const compare = promisify(bcrypt.compare);
 
+
 const PORT = process.env.PORT || 3000;
+
+const db = knex({
+  client: 'pg',
+  connection: {
+    host : '127.0.0.1',
+    user : 'ramchaik',
+    password : '',
+    database : 'smart-brain'
+  }
+});
 
 const database = {
   users: [
