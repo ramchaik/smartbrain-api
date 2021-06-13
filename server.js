@@ -68,30 +68,35 @@ app.post("/signin", async (req, res) => {
 
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
-  try {
-    const hashedPassword = await hash(password, null, null);
-
-    database.users.push({
-      id: Date.now().toString(),
+  db("users")
+    .returning("*")
+    .insert({
       name,
       email,
-      password: hashedPassword,
-      entries: 0,
       joined: new Date(),
-    });
-  } catch (error) {
-    console.log(error);
-  }
-
-  res.json(database.users[database.users.length - 1]);
+    })
+    .then((usr) => res.json(usr[0]))
+    .catch(
+      (err) => console.log(err) && res.status(400).json("unable to register")
+    );
 });
 
 app.get("/profile/:id", (req, res) => {
   const { id } = req.params;
-  const user = database.users.find((u) => u.id === id);
 
-  if (!user) return res.status(404).json("NOT FOUND");
-  res.json(user);
+  db.select("*")
+    .from("users")
+    .where({
+      id: id,
+    })
+    .then((user) => {
+      if (!user.length) return res.status(404).json("NOT FOUND");
+
+      return res.json(user[0]);
+    })
+    .catch(
+      (err) => console.log(err) && res.status(400).json("Something went wrong!")
+    );
 });
 
 app.put("/image", (req, res) => {
