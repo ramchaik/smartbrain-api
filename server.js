@@ -101,13 +101,15 @@ app.get("/profile/:id", (req, res) => {
 
 app.put("/image", (req, res) => {
   const { id } = req.body;
-  const user = database.users.find((u) => u.id === id);
 
-  if (!user) return res.status(404).json("NOT FOUND");
-
-  ++user.entries;
-
-  res.json(user.entries);
+  db("users")
+    .where("id", "=", id)
+    .increment("entries", 1)
+    .returning("entries")
+    .then((entries) => res.json(entries[0]))
+    .catch(
+      (err) => console.log(err) && res.status(400).json("Something went wrong!")
+    );
 });
 
 app.listen(PORT, () => {
