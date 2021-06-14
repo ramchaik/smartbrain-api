@@ -1,4 +1,4 @@
-const handleUsersGet = (req, res, db) => {
+const handleUsersGet = (db) => (req, res) => {
   db.select("*")
     .from("users")
     .then((users) => res.json(users))

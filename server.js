@@ -27,11 +27,11 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.get("/", (req, res) => user.handleUsersGet(req, res, db));
-app.post("/signin", (req, res) => signin.handleSignIn(req, res, db, bcrypt));
-app.post("/register", (req, res) => register.handleRegister(req, res, db, bcrypt));
-app.get("/profile/:id", (req, res) => profile.handleProfileGet(req, res, db));
-app.put("/image", (req, res) => image.handleImage(req, res, db));
+app.get("/", user.handleUsersGet(db));
+app.post("/signin", signin.handleSignIn(db, bcrypt));
+app.post("/register", register.handleRegister(db, bcrypt));
+app.get("/profile/:id", profile.handleProfileGet(db));
+app.put("/image", image.handleImage(db));
 
 app.listen(PORT, () => {
   console.log("listening on port " + PORT);

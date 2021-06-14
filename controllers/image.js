@@ -1,4 +1,4 @@
-const handleImage = (req, res, db) => {
+const handleImage = (db) => (req, res) => {
   const { id } = req.body;
 
   db("users")
@@ -7,8 +7,8 @@ const handleImage = (req, res, db) => {
     .returning("entries")
     .then(([entries]) => res.json(entries))
     .catch((err) => res.status(400).json("Something went wrong!"));
-}
+};
 
 module.exports = {
-	handleImage
-}
+  handleImage,
+};

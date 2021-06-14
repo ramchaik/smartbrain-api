@@ -1,4 +1,4 @@
-const handleSignIn = (req, res, db, bcrypt) => {
+const handleSignIn = (db, bcrypt) => (req, res) => {
   const { email, password } = req.body;
 
   db.select("email", "hash")
