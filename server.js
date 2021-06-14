@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
 const knex = require("knex");
 
+require('dotenv').config()
+
 const user = require("./controllers/user");
 const register = require("./controllers/register");
 const signin = require("./controllers/signin");
@@ -32,6 +34,7 @@ app.post("/signin", signin.handleSignIn(db, bcrypt));
 app.post("/register", register.handleRegister(db, bcrypt));
 app.get("/profile/:id", profile.handleProfileGet(db));
 app.put("/image", image.handleImage(db));
+app.post("/imageurl", image.handleAPICall);
 
 app.listen(PORT, () => {
   console.log("listening on port " + PORT);
